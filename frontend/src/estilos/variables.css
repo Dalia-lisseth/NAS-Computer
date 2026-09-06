@@ -1,0 +1,70 @@
+:root {
+  /* Paleta de Colores Principales - NAS Computer Dark Neon */
+  --color-fondo-principal: #050811;
+  --color-fondo-secundario: #090f1d;
+  --color-fondo-tarjeta: #0d1527;
+  --color-fondo-tarjeta-hover: #121c33;
+  --color-fondo-elevado: #15223c;
+  --color-fondo-input: #080e1b;
+
+  /* Acentos Azules y Neón */
+  --color-primario: #00b4d8;
+  --color-primario-brillante: #00d2ff;
+  --color-primario-oscuro: #0077b6;
+  --color-primario-rgb: 0, 180, 216;
+  --color-cyan-glow: rgba(0, 210, 255, 0.35);
+  --color-cyan-glow-fuerte: rgba(0, 210, 255, 0.6);
+
+  /* Acentos Dorados / León */
+  --color-dorado: #f59e0b;
+  --color-dorado-brillante: #fbbf24;
+  --color-dorado-oscuro: #d97706;
+  --color-dorado-rgb: 245, 158, 11;
+
+  /* Estados y Badges */
+  --color-exito: #10b981;
+  --color-exito-bg: rgba(16, 185, 129, 0.15);
+  --color-oferta: #00b4d8;
+  --color-oferta-bg: rgba(0, 180, 216, 0.18);
+  --color-peligro: #ef4444;
+  --color-whatsapp: #25d366;
+  --color-whatsapp-hover: #22bf5b;
+
+  /* Bordes */
+  --color-borde: #16243f;
+  --color-borde-brillante: #1e355e;
+  --color-borde-neon: rgba(0, 180, 216, 0.45);
+  --color-borde-neon-fuerte: rgba(0, 210, 255, 0.8);
+
+  /* Textos */
+  --color-texto-principal: #ffffff;
+  --color-texto-secundario: #94a3b8;
+  --color-texto-atenuado: #64748b;
+  --color-texto-inverso: #050811;
+
+  /* Sombras y Efectos Glow */
+  --sombra-tarjeta: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 180, 216, 0.2);
+  --sombra-tarjeta-hover: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 180, 216, 0.35);
+  --sombra-neon-azul: 0 0 15px rgba(0, 180, 216, 0.5), 0 0 30px rgba(0, 180, 216, 0.25);
+  --sombra-neon-dorado: 0 0 15px rgba(245, 158, 11, 0.5);
+  --sombra-boton-whatsapp: 0 0 20px rgba(37, 211, 102, 0.3);
+
+  /* Radios de borde */
+  --radio-sm: 6px;
+  --radio-md: 10px;
+  --radio-lg: 14px;
+  --radio-xl: 20px;
+  --radio-full: 9999px;
+
+  /* Tipografía */
+  --fuente-principal: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Inter', Roboto, sans-serif;
+  --fuente-titulos: 'Segoe UI', system-ui, sans-serif;
+
+  /* Transiciones */
+  --transicion-rapida: 0.15s ease;
+  --transicion-normal: 0.25s ease;
+  --transicion-suave: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout */
+  --ancho-maximo: 1400px;
+}

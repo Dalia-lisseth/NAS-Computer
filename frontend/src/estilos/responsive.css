@@ -1,0 +1,120 @@
+/* Responsive Design para NAS Computer */
+
+/* Pantallas Extra Grandes (> 1400px) */
+@media (min-width: 1401px) {
+  .contenedor-principal {
+    max-width: 1360px;
+  }
+}
+
+/* Laptops y Pantallas Medianas (< 1200px) */
+@media (max-width: 1200px) {
+  .seccion-tres-columnas-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .banner-whatsapp-contenido {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .banner-whatsapp-pasos {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Tablets (< 992px) */
+@media (max-width: 992px) {
+  .encabezado-navegacion {
+    display: none !important;
+  }
+
+  .encabezado-centro {
+    max-width: 100% !important;
+  }
+
+  .grid-categorias {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+
+  .seccion-tres-columnas-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .carrusel-hero-contenido {
+    flex-direction: column-reverse;
+    text-align: center;
+    padding: 2rem 1.5rem !important;
+  }
+
+  .carrusel-hero-texto {
+    max-width: 100% !important;
+    align-items: center;
+  }
+
+  .carrusel-hero-beneficios {
+    justify-content: center;
+  }
+
+  .barra-beneficios-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.5rem !important;
+  }
+
+  .pie-pagina-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 2.5rem !important;
+  }
+}
+
+/* Móviles (< 768px) */
+@media (max-width: 768px) {
+  .encabezado-superior {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch !important;
+  }
+
+  .encabezado-acciones {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .grid-categorias {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  .banner-whatsapp-pasos {
+    grid-template-columns: 1fr !important;
+  }
+
+  .banner-whatsapp-boton-col {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .barra-beneficios-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pie-pagina-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pie-pagina-inferior {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+}
+
+/* Móviles Pequeños (< 480px) */
+@media (max-width: 480px) {
+  .grid-categorias {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .carrusel-hero-titulo {
+    font-size: 1.5rem !important;
+  }
+}

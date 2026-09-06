@@ -1,0 +1,488 @@
+/* Estilos para el Panel de Administración - NAS Computer */
+
+/* Layout General del Admin */
+.admin-layout-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: #04070f;
+  color: #ffffff;
+}
+
+/* Barra Lateral (Sidebar) */
+.admin-sidebar {
+  width: 260px;
+  background: #060b17;
+  border-right: 1px solid #14223d;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.admin-sidebar-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #14223d;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-logo-img {
+  height: 38px;
+  object-fit: contain;
+  align-self: flex-start;
+}
+
+.admin-badge-rol {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #00d2ff;
+  background: rgba(0, 180, 216, 0.12);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.admin-sidebar-nav {
+  flex: 1;
+  padding: 1.25rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  overflow-y: auto;
+}
+
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radio-md);
+  color: #94a3b8;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.admin-nav-item:hover {
+  color: #ffffff;
+  background: rgba(0, 180, 216, 0.08);
+  border-color: rgba(0, 180, 216, 0.2);
+}
+
+.admin-nav-item.activo {
+  color: #00d2ff;
+  background: linear-gradient(90deg, rgba(0, 180, 216, 0.2) 0%, rgba(0, 119, 182, 0.05) 100%);
+  border-color: rgba(0, 210, 255, 0.4);
+  font-weight: 700;
+  box-shadow: inset 0 0 10px rgba(0, 180, 216, 0.1);
+}
+
+.admin-nav-badge {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  background: #1e355e;
+  color: #94a3b8;
+}
+
+.admin-nav-badge.alerta {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.admin-sidebar-footer {
+  padding: 1.25rem 1rem;
+  border-top: 1px solid #14223d;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn-ver-tienda-cliente {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  border-radius: var(--radio-md);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ver-tienda-cliente:hover {
+  background: rgba(16, 185, 129, 0.25);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-admin-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem;
+  border-radius: var(--radio-md);
+  color: #64748b;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.btn-admin-logout:hover {
+  color: #ef4444;
+}
+
+/* Área Principal de Contenido */
+.admin-main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #050812;
+}
+
+/* Cabecera Superior (Topbar) */
+.admin-topbar {
+  height: 64px;
+  background: rgba(6, 11, 23, 0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #14223d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+.admin-topbar-titulo-area {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.admin-topbar-titulo {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.admin-topbar-acciones {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-usuario-perfil {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: #0a1122;
+  border: 1px solid #1c3057;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+}
+
+.admin-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00b4d8, #0077b6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.admin-usuario-nombre {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+/* Contenido de Páginas */
+.admin-page-content {
+  padding: 2rem;
+  flex: 1;
+}
+
+/* Grid de Tarjetas KPI */
+.admin-kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.admin-kpi-card {
+  background: #091021;
+  border: 1px solid #162645;
+  border-radius: var(--radio-lg);
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  transition: all 0.25s ease;
+}
+
+.admin-kpi-card:hover {
+  border-color: rgba(0, 180, 216, 0.45);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 180, 216, 0.2);
+  transform: translateY(-2px);
+}
+
+.admin-kpi-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-kpi-label {
+  font-size: 0.78rem;
+  color: #8497b0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-kpi-valor {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.admin-kpi-icono-caja {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-kpi-icono-caja.cyan {
+  background: rgba(0, 180, 216, 0.15);
+  border: 1px solid rgba(0, 210, 255, 0.3);
+  color: #00d2ff;
+}
+
+.admin-kpi-icono-caja.gold {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+.admin-kpi-icono-caja.green {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.admin-kpi-icono-caja.red {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+/* Tablas Administrativas Cyber */
+.admin-tabla-panel {
+  background: #091021;
+  border: 1px solid #162645;
+  border-radius: var(--radio-lg);
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.admin-tabla-top-bar {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid #162645;
+  flex-wrap: wrap;
+}
+
+.admin-tabla-busqueda {
+  position: relative;
+  min-width: 280px;
+}
+
+.admin-tabla-input {
+  width: 100%;
+  background: #060b17;
+  border: 1px solid #1c2e4f;
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem 0.55rem 2.2rem;
+  color: #ffffff;
+  font-size: 0.85rem;
+}
+
+.admin-tabla-icono-lupa {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+}
+
+.admin-tabla-filtros {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-tabla-select {
+  background: #060b17;
+  border: 1px solid #1c2e4f;
+  color: #cbd5e1;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.admin-tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-tabla th {
+  background: #060b17;
+  padding: 0.85rem 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #8497b0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #162645;
+}
+
+.admin-tabla td {
+  padding: 1rem 1.25rem;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+}
+
+.admin-tabla tr:hover td {
+  background: rgba(0, 180, 216, 0.03);
+}
+
+/* Indicadores de Stock */
+.stock-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+}
+
+.stock-pill.disponible {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.stock-pill.bajo {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.stock-pill.agotado {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Botones de Acción en Tablas */
+.admin-acciones-celda {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-accion-tabla {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  background: #080f1e;
+  border: 1px solid #1c2e4f;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-accion-tabla.editar:hover {
+  color: #00d2ff;
+  border-color: #00b4d8;
+  background: rgba(0, 180, 216, 0.15);
+}
+
+.btn-accion-tabla.eliminar:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.btn-accion-tabla.wa:hover {
+  color: #25d366;
+  border-color: #25d366;
+  background: rgba(37, 211, 102, 0.15);
+}
+
+@media (max-width: 1024px) {
+  .admin-kpis-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 70px;
+  }
+  .admin-sidebar .admin-nav-item span,
+  .admin-sidebar .admin-badge-rol,
+  .admin-sidebar .btn-ver-tienda-cliente span {
+    display: none;
+  }
+  .admin-kpis-grid {
+    grid-template-columns: 1fr;
+  }
+}

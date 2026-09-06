@@ -1,0 +1,10 @@
+@import './estilos/variables.css';
+@import './estilos/global.css';
+@import './estilos/responsive.css';
+
+/* Estilos de montaje base */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

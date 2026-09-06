@@ -1,0 +1,183 @@
+@import './variables.css';
+
+/* Reset y configuraciones base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--fuente-principal);
+  background-color: var(--color-fondo-principal);
+  color: var(--color-texto-principal);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 180, 216, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 100% 50%, rgba(0, 119, 182, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 0% 80%, rgba(245, 158, 11, 0.03) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+
+/* Enlaces y botones */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transicion-rapida);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  outline: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  color: var(--color-texto-principal);
+  border: 1px solid var(--color-borde);
+  background: var(--color-fondo-input);
+  outline: none;
+  transition: all var(--transicion-normal);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.2);
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-fondo-principal);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #192742;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 180, 216, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primario-oscuro);
+  box-shadow: 0 0 10px var(--color-cyan-glow);
+}
+
+/* Contenedor principal */
+.contenedor-principal {
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Títulos de sección con barra azul neón (ej: — CATEGORÍAS PRINCIPALES) */
+.titulo-seccion-contenedor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.titulo-seccion {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c9d6ea;
+}
+
+.titulo-seccion::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  background: var(--color-primario);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--color-primario-brillante);
+}
+
+.enlace-ver-todas {
+  font-size: 0.85rem;
+  color: var(--color-primario);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all var(--transicion-rapida);
+}
+
+.enlace-ver-todas:hover {
+  color: var(--color-primario-brillante);
+  text-shadow: 0 0 8px var(--color-cyan-glow);
+  transform: translateX(3px);
+}
+
+/* Clases de utilidad */
+.texto-gradiente-cyan {
+  background: linear-gradient(135deg, #ffffff 40%, var(--color-primario-brillante) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.texto-gradiente-azul {
+  background: linear-gradient(135deg, var(--color-primario-brillante) 0%, #0077b6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.borde-cyber {
+  border: 1px solid var(--color-borde);
+  transition: all var(--transicion-normal);
+}
+
+.borde-cyber:hover {
+  border-color: var(--color-borde-neon);
+  box-shadow: var(--sombra-tarjeta-hover);
+}
+
+/* Animaciones sutiles */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(0, 180, 216, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(0, 180, 216, 0.6);
+  }
+}
+
+.anim-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
