@@ -50,19 +50,29 @@ export function PaginaAdminProductos() {
     setModalAbierto(true);
   };
 
-  const manejarGuardar = (datosProducto) => {
-    if (productoAEditar) {
-      actualizarProducto(productoAEditar.id, datosProducto);
-    } else {
-      agregarProducto(datosProducto);
+  const manejarGuardar = async (datosProducto) => {
+    try {
+      if (productoAEditar) {
+        await actualizarProducto(productoAEditar.id, datosProducto);
+      } else {
+        await agregarProducto(datosProducto);
+      }
+      setModalAbierto(false);
+      setProductoAEditar(null);
+    } catch (error) {
+      console.error('Error al guardar producto:', error);
+      alert(error.message || 'No fue posible guardar el producto.');
     }
-    setModalAbierto(false);
-    setProductoAEditar(null);
   };
 
-  const manejarEliminar = (id, nombre) => {
+  const manejarEliminar = async (id, nombre) => {
     if (window.confirm(`¿Estás seguro de que deseas eliminar "${nombre}" del catálogo?`)) {
-      eliminarProducto(id);
+      try {
+        await eliminarProducto(id);
+      } catch (error) {
+        console.error('Error al eliminar producto:', error);
+        alert(error.message || 'No fue posible eliminar el producto.');
+      }
     }
   };
 

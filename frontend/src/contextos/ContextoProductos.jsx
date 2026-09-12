@@ -1,65 +1,19 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { PRODUCTOS } from '../datos/productos';
-import { CATEGORIAS } from '../datos/categorias';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { BANNERS as BANNERS_DEFAULT } from '../datos/banners';
+import { useAutenticacionContext } from './ContextoAutenticacion';
+import { servicioCategorias } from '../servicios/servicioCategorias';
+import { servicioProductos } from '../servicios/servicioProductos';
 
 const ContextoProductos = createContext(null);
 
-const normalizarCategoria = (valor) => {
-  if (valor === null || valor === undefined) return '';
-  return String(valor)
-    .toLowerCase()
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '');
-};
-
 export function ProveedorProductos({ children }) {
-  // Estado de Productos con persistencia en localStorage
-  const [productos, setProductos] = useState(() => {
-    try {
-      const guardados = localStorage.getItem('nas_catalogo_productos');
-      if (guardados) {
-        const parseados = JSON.parse(guardados);
-        if (Array.isArray(parseados)) {
-          // Respetar estrictamente eliminaciones y purgar cualquier residuo de smartphones
-          return parseados.filter(
-            (p) => p.id !== 'prod-cel-1' && p.categoria !== 'smartphones' && p.categoriaSlug !== 'smartphones'
-          );
-        }
-      }
-    } catch (e) {
-      console.error('Error al cargar productos de localStorage:', e);
-    }
-    // Inicializar agregando información de stock inicial a los productos base
-    return PRODUCTOS.map((p, index) => ({
-      ...p,
-      stock: p.stock !== undefined ? p.stock : (index === 2 ? 3 : index === 5 ? 1 : 12),
-      stockMinimo: 4
-    }));
-  });
+  const { accessToken, esAdmin, cerrarSesion } = useAutenticacionContext();
+  const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [cargandoCatalogo, setCargandoCatalogo] = useState(true);
+  const [errorCatalogo, setErrorCatalogo] = useState('');
+  const solicitudCatalogoRef = useRef(0);
 
-  // Estado de Categorías con persistencia en localStorage
-  const [categorias, setCategorias] = useState(() => {
-    try {
-      const guardadas = localStorage.getItem('nas_catalogo_categorias');
-      if (guardadas) {
-        const parseadas = JSON.parse(guardadas);
-        if (Array.isArray(parseadas)) {
-          // Purgar cualquier residuo de categoría smartphones
-          return parseadas.filter(
-            (c) => c.id !== 'smartphones' && c.slug !== 'smartphones'
-          );
-        }
-      }
-    } catch (e) {
-      console.error('Error al cargar categorías de localStorage:', e);
-    }
-    return [...CATEGORIAS];
-  });
-
-  // Estado global de banners del carrusel con persistencia
   const [banners, setBanners] = useState(() => {
     try {
       const guardados = localStorage.getItem('nas_banners');
@@ -82,22 +36,32 @@ export function ProveedorProductos({ children }) {
     return BANNERS_DEFAULT.map((banner) => ({ ...banner }));
   });
 
-  // Guardar en localStorage ante cualquier cambio
-  useEffect(() => {
+  const recargarCatalogo = useCallback(async () => {
+    const solicitudActual = ++solicitudCatalogoRef.current;
+    setCargandoCatalogo(true);
     try {
-      localStorage.setItem('nas_catalogo_productos', JSON.stringify(productos));
-    } catch (e) {
-      console.error('Error al guardar productos en localStorage:', e);
+      const [categoriasApi, productosApi] = await Promise.all([
+        servicioCategorias.obtenerTodas(),
+        servicioProductos.obtenerTodos({ token: accessToken, incluirInactivos: Boolean(esAdmin && accessToken) })
+      ]);
+      if (solicitudActual !== solicitudCatalogoRef.current) return;
+      setCategorias(categoriasApi);
+      setProductos(productosApi);
+      setErrorCatalogo('');
+    } catch (error) {
+      if (solicitudActual !== solicitudCatalogoRef.current) return;
+      console.error('Error al cargar el catálogo:', error);
+      if (error.status === 401) cerrarSesion();
+      setErrorCatalogo(error.message || 'No fue posible cargar el catálogo.');
+    } finally {
+      if (solicitudActual === solicitudCatalogoRef.current) setCargandoCatalogo(false);
     }
-  }, [productos]);
+  }, [accessToken, cerrarSesion, esAdmin]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('nas_catalogo_categorias', JSON.stringify(categorias));
-    } catch (e) {
-      console.error('Error al guardar categorías en localStorage:', e);
-    }
-  }, [categorias]);
+    recargarCatalogo();
+    return () => { solicitudCatalogoRef.current += 1; };
+  }, [recargarCatalogo]);
 
   useEffect(() => {
     try {
@@ -107,159 +71,90 @@ export function ProveedorProductos({ children }) {
     }
   }, [banners]);
 
-  // --- MÉTODOS CRUD PRODUCTOS ---
-
-  const agregarProducto = (nuevoProducto) => {
-    const idGenerado = `prod-nas-${Date.now()}`;
-    const slugGenerado = nuevoProducto.nombre
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
-
-    const categoriaRelacionada = categorias.find(
-      cat =>
-        cat.slug === nuevoProducto.categoria ||
-        cat.id === nuevoProducto.categoria ||
-        cat.nombre?.toLowerCase() === String(nuevoProducto.categoriaNombre || '').toLowerCase()
-    );
-
-    const categoriaSlug = categoriaRelacionada?.slug || nuevoProducto.categoria || 'general';
-    const categoriaNombre = categoriaRelacionada?.nombre || nuevoProducto.categoriaNombre || 'General';
-
-    const productoCompleto = {
-      id: idGenerado,
-      slug: slugGenerado,
-      rating: 5,
-      totalReviews: 0,
-      stock: Number(nuevoProducto.stock) || 0,
-      stockMinimo: Number(nuevoProducto.stockMinimo) || 4,
-      tipoSeccion: nuevoProducto.tipoSeccion || 'general',
-      imagen: nuevoProducto.imagen || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=500&auto=format&fit=crop&q=80',
-      categoria: categoriaSlug,
-      categoriaNombre,
-      categoriaId: categoriaRelacionada?.id || categoriaSlug,
-      categoriaSlug: categoriaSlug,
-      ...nuevoProducto,
-      precio: Number(nuevoProducto.precio) || 0,
-      precioAnterior: nuevoProducto.precioAnterior ? Number(nuevoProducto.precioAnterior) : null,
-    };
-
-    setProductos(prev => [productoCompleto, ...prev]);
-    return productoCompleto;
-  };
-
-  const actualizarProducto = (id, datosActualizados) => {
-    setProductos(prev =>
-      prev.map(p => {
-        if (p.id === id) {
-          const categoriaRelacionada = categorias.find(
-            cat =>
-              cat.slug === (datosActualizados.categoria || p.categoria) ||
-              cat.id === (datosActualizados.categoria || p.categoria) ||
-              cat.nombre?.toLowerCase() === String(datosActualizados.categoriaNombre || p.categoriaNombre || '').toLowerCase()
-          );
-
-          const categoriaSlug = categoriaRelacionada?.slug || datosActualizados.categoria || p.categoria || 'general';
-          const categoriaNombre = categoriaRelacionada?.nombre || datosActualizados.categoriaNombre || p.categoriaNombre || 'General';
-
-          return {
-            ...p,
-            ...datosActualizados,
-            categoria: categoriaSlug,
-            categoriaNombre,
-            categoriaId: categoriaRelacionada?.id || categoriaSlug,
-            categoriaSlug,
-            precio: Number(datosActualizados.precio !== undefined ? datosActualizados.precio : p.precio),
-            precioAnterior: datosActualizados.precioAnterior ? Number(datosActualizados.precioAnterior) : null,
-            stock: Number(datosActualizados.stock !== undefined ? datosActualizados.stock : p.stock)
-          };
-        }
-        return p;
-      })
-    );
-  };
-
-  const eliminarProducto = (id) => {
-    setProductos(prev => prev.filter(p => p.id !== id));
-  };
-
-  const actualizarStock = (id, nuevoStock) => {
-    const valor = Math.max(0, Number(nuevoStock));
-    setProductos(prev =>
-      prev.map(p => (p.id === id ? { ...p, stock: valor } : p))
-    );
-  };
-
-  const alternarEstadoOferta = (id, esOferta, precioOferta = null) => {
-    setProductos(prev =>
-      prev.map(p => {
-        if (p.id === id) {
-          if (esOferta) {
-            const precioActual = p.precio;
-            const nuevoPrecioOferta = precioOferta || Math.round(precioActual * 0.85);
-            return {
-              ...p,
-              badge: 'SALE',
-              precioAnterior: precioActual,
-              precio: nuevoPrecioOferta,
-              tipoSeccion: p.tipoSeccion === 'general' ? 'ofertas' : p.tipoSeccion
-            };
-          }
-
-          const precioBase = p.precioAnterior || p.precio;
-          return {
-            ...p,
-            badge: null,
-            precio: precioBase,
-            precioAnterior: null,
-            tipoSeccion: p.tipoSeccion === 'ofertas' ? 'general' : p.tipoSeccion
-          };
-        }
-        return p;
-      })
-    );
-  };
-
-  // --- MÉTODOS CRUD CATEGORÍAS ---
-
-  const agregarCategoria = (nuevaCat) => {
-    const id = nuevaCat.nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const categoriaCompleta = {
-      id,
-      slug: id,
-      icono: 'Cpu',
-      ...nuevaCat
-    };
-    setCategorias(prev => [...prev, categoriaCompleta]);
-    return categoriaCompleta;
-  };
-
-  const actualizarCategoria = (id, datos) => {
-    setCategorias(prev =>
-      prev.map(c => (c.id === id ? { ...c, ...datos } : c))
-    );
-  };
-
-  const eliminarCategoria = (id, eliminarProductosAsociados = true) => {
-    const categoriaAEliminar = categorias.find(c => c.id === id || c.slug === id);
-    const slugAEliminar = categoriaAEliminar?.slug || id;
-
-    setCategorias(prev => prev.filter(c => c.id !== id && c.slug !== slugAEliminar));
-
-    if (eliminarProductosAsociados) {
-      setProductos(prev =>
-        prev.filter(
-          p =>
-            p.categoria !== slugAEliminar &&
-            p.categoria !== id &&
-            p.categoriaId !== id &&
-            p.categoriaSlug !== slugAEliminar
-        )
-      );
+  const exigirAdmin = () => {
+    if (!accessToken || !esAdmin) {
+      throw new Error('Inicia sesión como administrador para gestionar el catálogo.');
     }
   };
 
-  // --- MÉTODOS CRUD BANNERS ---
+  const ejecutarComoAdmin = async (operacion) => {
+    exigirAdmin();
+    try {
+      return await operacion();
+    } catch (error) {
+      if (error.status === 401) cerrarSesion();
+      throw error;
+    }
+  };
+
+  const agregarProducto = async (nuevoProducto) => {
+    const creado = await ejecutarComoAdmin(() => servicioProductos.crear(nuevoProducto, categorias, accessToken));
+    setProductos((prev) => [creado, ...prev]);
+    return creado;
+  };
+
+  const actualizarProducto = async (id, datosActualizados) => {
+    const actual = productos.find((p) => p.id === id);
+    const actualizado = await ejecutarComoAdmin(() => servicioProductos.actualizar(id, datosActualizados, categorias, accessToken, actual));
+    setProductos((prev) => prev.map((p) => (p.id === id ? actualizado : p)));
+    return actualizado;
+  };
+
+  const eliminarProducto = async (id) => {
+    await ejecutarComoAdmin(() => servicioProductos.eliminar(id, accessToken));
+    setProductos((prev) => prev.filter((p) => p.id !== id && p.slug !== id));
+  };
+
+  const actualizarStock = async (id, nuevoStock) => {
+    return actualizarProducto(id, { stock: Math.max(0, Number(nuevoStock)) });
+  };
+
+  const alternarEstadoOferta = async (id, esOferta, precioOferta = null) => {
+    const producto = productos.find((p) => p.id === id);
+    if (!producto) return;
+
+    if (esOferta) {
+      const precioActual = producto.precio;
+      const nuevoPrecioOferta = precioOferta || Math.round(precioActual * 0.85);
+      return actualizarProducto(id, {
+        badge: 'SALE',
+        precioAnterior: precioActual,
+        precio: nuevoPrecioOferta,
+        tipoSeccion: producto.tipoSeccion === 'general' ? 'ofertas' : producto.tipoSeccion
+      });
+    }
+
+    return actualizarProducto(id, {
+      badge: null,
+      precio: producto.precioAnterior || producto.precio,
+      precioAnterior: null,
+      tipoSeccion: producto.tipoSeccion === 'ofertas' ? 'general' : producto.tipoSeccion
+    });
+  };
+
+  const agregarCategoria = async (nuevaCat) => {
+    const creada = await ejecutarComoAdmin(() => servicioCategorias.crear(nuevaCat, accessToken));
+    setCategorias((prev) => [...prev, creada]);
+    return creada;
+  };
+
+  const actualizarCategoria = async (id, datos) => {
+    const actualizada = await ejecutarComoAdmin(() => servicioCategorias.actualizar(id, datos, accessToken));
+    setCategorias((prev) => prev.map((c) => (c.id === id ? actualizada : c)));
+    setProductos((prev) => prev.map((p) => (
+      p.categoriaId === id
+        ? { ...p, categoria: actualizada.slug, categoriaSlug: actualizada.slug, categoriaNombre: actualizada.nombre }
+        : p
+    )));
+    return actualizada;
+  };
+
+  const eliminarCategoria = async (id) => {
+    await ejecutarComoAdmin(() => servicioCategorias.eliminar(id, accessToken));
+    const categoriaAEliminar = categorias.find((c) => c.id === id || c.slug === id);
+    const slugAEliminar = categoriaAEliminar?.slug || id;
+    setCategorias((prev) => prev.filter((c) => c.id !== id && c.slug !== slugAEliminar));
+  };
 
   const agregarBanner = (nuevoBanner) => {
     const bannerNuevo = {
@@ -278,22 +173,22 @@ export function ProveedorProductos({ children }) {
       ]
     };
 
-    setBanners(prev => [bannerNuevo, ...prev]);
+    setBanners((prev) => [bannerNuevo, ...prev]);
     return bannerNuevo;
   };
 
   const actualizarBanner = (id, datos) => {
-    setBanners(prev => prev.map(banner =>
+    setBanners((prev) => prev.map((banner) =>
       banner.id === id ? { ...banner, ...datos } : banner
     ));
   };
 
   const eliminarBanner = (id) => {
-    setBanners(prev => prev.filter(banner => banner.id !== id));
+    setBanners((prev) => prev.filter((banner) => banner.id !== id));
   };
 
   const reordenarBanners = (indiceInicial, indiceFinal) => {
-    setBanners(prev => {
+    setBanners((prev) => {
       const copia = [...prev];
       const [item] = copia.splice(indiceInicial, 1);
       if (!item) return prev;
@@ -306,6 +201,9 @@ export function ProveedorProductos({ children }) {
     productos,
     categorias,
     banners,
+    cargandoCatalogo,
+    errorCatalogo,
+    recargarCatalogo,
     agregarProducto,
     actualizarProducto,
     eliminarProducto,

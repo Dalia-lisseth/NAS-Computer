@@ -14,6 +14,13 @@ export class ProductsController {
   @Get()
   findAll(@Query('search') search?: string, @Query('category') category?: string) { return this.products.findAll(search, category); }
 
+  @Get('admin')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  findAllAdmin(@Query('search') search?: string, @Query('category') category?: string) {
+    return this.products.findAll(search, category, true);
+  }
+
   @Get(':idOrSlug')
   findOne(@Param('idOrSlug') idOrSlug: string) { return this.products.findOne(idOrSlug); }
 

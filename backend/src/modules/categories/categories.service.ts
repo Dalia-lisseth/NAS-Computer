@@ -1,4 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../database/prisma.service';
 import { createSlug } from '../../common/utils/create-slug';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -17,8 +18,7 @@ export class CategoriesService {
     try {
       return await this.prisma.category.create({ data: { name: dto.name.trim(), slug, icon: dto.icon?.trim(), description: dto.description?.trim() } });
     } catch (error) {
-      if (error instanceof Error && error.message.includes('Unique constraint')) throw new ConflictException('Ya existe una categoría con ese nombre o slug.');
-      throw error;
+      this.rethrowUnique(error);
     }
   }
 
@@ -28,8 +28,7 @@ export class CategoriesService {
     try {
       return await this.prisma.category.update({ where: { id }, data: { ...dto, name: dto.name?.trim(), slug, icon: dto.icon?.trim(), description: dto.description?.trim() } });
     } catch (error) {
-      if (error instanceof Error && error.message.includes('Unique constraint')) throw new ConflictException('Ya existe una categoría con ese nombre o slug.');
-      throw error;
+      this.rethrowUnique(error);
     }
   }
 
@@ -44,5 +43,15 @@ export class CategoriesService {
     const category = await this.prisma.category.findUnique({ where: { id } });
     if (!category) throw new NotFoundException('Categoría no encontrada.');
     return category;
+  }
+
+  private rethrowUnique(error: unknown): never {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      throw new ConflictException('Ya existe una categoría con ese nombre o slug.');
+    }
+    if (error instanceof Error && error.message.includes('Unique constraint')) {
+      throw new ConflictException('Ya existe una categoría con ese nombre o slug.');
+    }
+    throw error;
   }
 }

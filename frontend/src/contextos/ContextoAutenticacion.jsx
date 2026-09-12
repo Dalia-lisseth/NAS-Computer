@@ -1,13 +1,24 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { servicioAutenticacion } from '../servicios/servicioAutenticacion';
 
 const ContextoAutenticacion = createContext(null);
 const CLAVE_SESION = 'nas_sesion';
 
+const tokenEstaExpirado = (token) => {
+  try {
+    const parte = token.split('.')[1];
+    const payload = JSON.parse(atob(parte.replace(/-/g, '+').replace(/_/g, '/')));
+    return typeof payload.exp === 'number' && payload.exp * 1000 <= Date.now();
+  } catch {
+    return true;
+  }
+};
+
 const leerSesion = () => {
   try {
     const sesion = sessionStorage.getItem(CLAVE_SESION);
-    return sesion ? JSON.parse(sesion) : null;
+    const datos = sesion ? JSON.parse(sesion) : null;
+    return datos?.accessToken && !tokenEstaExpirado(datos.accessToken) ? datos : null;
   } catch {
     return null;
   }
@@ -56,7 +67,7 @@ export function ProveedorAutenticacion({ children }) {
   };
 
   const abrirModalAuth = (pestana = 'login') => { setPestanaInicialModal(pestana); setModalLoginAbierto(true); };
-  const cerrarSesion = () => setSesion(null);
+  const cerrarSesion = useCallback(() => setSesion(null), []);
   const usuario = sesion?.usuario || null;
 
   return <ContextoAutenticacion.Provider value={{ usuario, accessToken: sesion?.accessToken || null, estaAutenticado: Boolean(usuario), esAdmin: usuario?.rol === 'admin', modalLoginAbierto, setModalLoginAbierto, pestanaInicialModal, abrirModalAuth, iniciarSesion: iniciarSesionUnificado, iniciarSesionUnificado, iniciarSesionAdmin, registrarCliente, cerrarSesion }}>{children}</ContextoAutenticacion.Provider>;

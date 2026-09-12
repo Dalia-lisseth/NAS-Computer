@@ -36,30 +36,51 @@ export class ProductsService {
     try {
       return await this.prisma.product.create({ data: { ...dto, name: dto.name.trim(), slug, description: dto.description?.trim() || '', image: dto.image?.trim(), badge: dto.badge?.trim(), previousPrice: dto.previousPrice ?? null, specifications: dto.specifications ?? undefined }, include: productInclude });
     } catch (error) {
-      if (error instanceof Error && error.message.includes('Unique constraint')) throw new ConflictException('Ya existe un producto con ese slug.');
-      throw error;
+      this.rethrowUnique(error);
     }
   }
 
-  async update(id: string, dto: UpdateProductDto) {
-    await this.findOne(id, true);
+  async update(idOrSlug: string, dto: UpdateProductDto) {
+    const product = await this.findOne(idOrSlug, true);
     if (dto.categoryId) await this.ensureCategory(dto.categoryId);
     const slug = dto.slug || dto.name ? createSlug(dto.slug || dto.name || '') : undefined;
     const { categoryId, specifications, ...data } = dto;
     try {
-      return await this.prisma.product.update({ where: { id }, data: { ...data, name: dto.name?.trim(), slug, description: dto.description?.trim(), image: dto.image?.trim(), badge: dto.badge?.trim(), specifications: specifications === null ? Prisma.JsonNull : specifications, category: categoryId ? { connect: { id: categoryId } } : undefined }, include: productInclude });
+      return await this.prisma.product.update({
+        where: { id: product.id },
+        data: {
+          ...data,
+          name: dto.name?.trim(),
+          slug,
+          description: dto.description !== undefined ? dto.description.trim() : undefined,
+          image: dto.image !== undefined ? (dto.image ? dto.image.trim() : null) : undefined,
+          badge: dto.badge !== undefined ? (dto.badge ? dto.badge.trim() : null) : undefined,
+          specifications: specifications === null ? Prisma.JsonNull : specifications,
+          category: categoryId ? { connect: { id: categoryId } } : undefined
+        },
+        include: productInclude
+      });
     } catch (error) {
-      if (error instanceof Error && error.message.includes('Unique constraint')) throw new ConflictException('Ya existe un producto con ese slug.');
-      throw error;
+      this.rethrowUnique(error);
     }
   }
 
-  async remove(id: string) {
-    await this.findOne(id, true);
-    await this.prisma.product.delete({ where: { id } });
+  async remove(idOrSlug: string) {
+    const product = await this.findOne(idOrSlug, true);
+    await this.prisma.product.delete({ where: { id: product.id } });
   }
 
   private async ensureCategory(id: string) {
     if (!await this.prisma.category.findUnique({ where: { id } })) throw new NotFoundException('La categoría indicada no existe.');
+  }
+
+  private rethrowUnique(error: unknown): never {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      throw new ConflictException('Ya existe un producto con ese slug.');
+    }
+    if (error instanceof Error && error.message.includes('Unique constraint')) {
+      throw new ConflictException('Ya existe un producto con ese slug.');
+    }
+    throw error;
   }
 }
