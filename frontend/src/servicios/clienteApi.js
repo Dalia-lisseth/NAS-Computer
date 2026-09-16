@@ -2,10 +2,15 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 const extraerMensajeError = async (respuesta) => {
   try {
-    const datos = await respuesta.json();
-    return Array.isArray(datos.message) ? datos.message.join('. ') : (datos.message || 'No fue posible completar la solicitud.');
+    const texto = await respuesta.text();
+    try {
+      const datos = JSON.parse(texto);
+      return Array.isArray(datos.message) ? datos.message.join('. ') : (datos.message || 'No fue posible completar la solicitud.');
+    } catch {
+      return texto || `Error del servidor (${respuesta.status})`;
+    }
   } catch {
-    return 'No fue posible conectar con el servidor.';
+    return `Error del servidor (${respuesta.status})`;
   }
 };
 
@@ -21,7 +26,19 @@ export const solicitarApi = async (ruta, { method = 'GET', body, token } = {}) =
       ...(body !== undefined ? { body: JSON.stringify(body) } : {})
     });
   } catch {
-    throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté iniciado.');
+    if (API_URL.startsWith('http')) {
+      try {
+        respuesta = await fetch(`/api${ruta}`, {
+          method,
+          headers: encabezados,
+          ...(body !== undefined ? { body: JSON.stringify(body) } : {})
+        });
+      } catch {
+        throw new Error('No se pudo conectar con el servidor. Asegúrate de que el backend esté ejecutándose en el puerto 3000 (npm run start:dev en la carpeta backend).');
+      }
+    } else {
+      throw new Error('No se pudo conectar con el servidor. Asegúrate de que el backend esté ejecutándose en el puerto 3000 (npm run start:dev en la carpeta backend).');
+    }
   }
 
   if (!respuesta.ok) {

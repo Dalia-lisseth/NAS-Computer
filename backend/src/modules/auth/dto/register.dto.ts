@@ -2,18 +2,18 @@ import { IsEmail, IsOptional, IsString, Matches, MaxLength, MinLength } from 'cl
 
 export class RegisterDto {
   @IsString()
-  @MinLength(2)
-  @MaxLength(100)
+  @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres.' })
+  @MaxLength(100, { message: 'El nombre no puede exceder 100 caracteres.' })
   name!: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: 'Por favor ingresa un correo electrónico válido.' })
   email!: string;
 
   @IsString()
-  @MinLength(12)
-  @Matches(/[a-z]/, { message: 'password must include a lowercase letter' })
-  @Matches(/[A-Z]/, { message: 'password must include an uppercase letter' })
-  @Matches(/\d/, { message: 'password must include a number' })
+  @MinLength(12, { message: 'La contraseña debe tener al menos 12 caracteres.' })
+  @Matches(/[a-z]/, { message: 'La contraseña debe incluir al menos una letra minúscula.' })
+  @Matches(/[A-Z]/, { message: 'La contraseña debe incluir al menos una letra mayúscula.' })
+  @Matches(/\d/, { message: 'La contraseña debe incluir al menos un número.' })
   password!: string;
 
   @IsOptional()
