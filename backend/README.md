@@ -185,29 +185,92 @@ Ejemplo mínimo:
 }
 ```
 
+### Usuarios (users)
+
+| Método | Ruta | Acceso | Descripción |
+| --- | --- | --- | --- |
+| `GET` | `/api/users` | ADMIN | Lista usuarios con búsqueda, rol, estado y paginación. |
+| `GET` | `/api/users/:id` | ADMIN | Obtiene los detalles de un usuario por ID. |
+| `POST` | `/api/users` | ADMIN | Crea un nuevo usuario con rol especificado. |
+| `PATCH` | `/api/users/:id` | ADMIN | Actualiza los datos de un usuario. |
+| `PATCH` | `/api/users/:id/status` | ADMIN | Activa o desactiva la cuenta de un usuario. |
+| `DELETE` | `/api/users/:id` | ADMIN | Elimina la cuenta de un usuario (responde `204`). |
+
+### Inventario (inventory)
+
+| Método | Ruta | Acceso | Descripción |
+| --- | --- | --- | --- |
+| `GET` | `/api/inventory/summary` | ADMIN | Métricas de inventario (total unidades, valorizado, stock bajo y agotados). |
+| `GET` | `/api/inventory/alerts` | ADMIN | Lista alertas de productos en o por debajo de su stock mínimo. |
+| `GET` | `/api/inventory/movements` | ADMIN | Historial de movimientos de entrada, salida y ajustes con paginación. |
+| `POST` | `/api/inventory/movements` | ADMIN | Registra un movimiento (`ENTRY`, `EXIT`, `ADJUSTMENT`) y actualiza stock. |
+| `POST` | `/api/inventory/adjust` | ADMIN | Ajusta directamente el stock de un producto a una cifra específica. |
+
+### Promociones (promotions)
+
+| Método | Ruta | Acceso | Descripción |
+| --- | --- | --- | --- |
+| `GET` | `/api/promotions` | Público | Lista promociones actualmente activas y vigentes. |
+| `GET` | `/api/promotions/admin` | ADMIN | Lista todas las promociones con filtros y productos asociados. |
+| `GET` | `/api/promotions/:id` | Público | Consulta el detalle de una promoción. |
+| `POST` | `/api/promotions` | ADMIN | Crea una promoción (porcentaje o monto fijo) y asocia productos. |
+| `PATCH` | `/api/promotions/:id` | ADMIN | Actualiza una promoción y sus productos vinculados. |
+| `PATCH` | `/api/promotions/:id/toggle` | ADMIN | Alterna el estado activo/inactivo de la promoción. |
+| `DELETE` | `/api/promotions/:id` | ADMIN | Elimina una promoción (responde `204`). |
+
+### Banners (banners)
+
+| Método | Ruta | Acceso | Descripción |
+| --- | --- | --- | --- |
+| `GET` | `/api/banners` | Público | Lista los banners activos del carrusel de inicio ordenados. |
+| `GET` | `/api/banners/admin` | ADMIN | Lista todos los banners (activos e inactivos). |
+| `GET` | `/api/banners/:id` | Público | Obtiene el detalle de un banner por ID. |
+| `POST` | `/api/banners` | ADMIN | Crea un nuevo banner para la página principal. |
+| `PATCH` | `/api/banners/reorder` | ADMIN | Actualiza el orden de visualización de los banners. |
+| `PATCH` | `/api/banners/:id` | ADMIN | Modifica títulos, imagen, enlaces, botones o beneficios. |
+| `DELETE` | `/api/banners/:id` | ADMIN | Elimina un banner (responde `204`). |
+
+### Cotizaciones (quotes)
+
+| Método | Ruta | Acceso | Descripción |
+| --- | --- | --- | --- |
+| `POST` | `/api/quotes` | Público / JWT | Registra una solicitud de cotización (asocia usuario si está autenticado). |
+| `GET` | `/api/quotes` | ADMIN | Lista todas las cotizaciones con búsqueda por cliente/código y estado. |
+| `GET` | `/api/quotes/my` | JWT | Lista las cotizaciones solicitadas por el usuario actual. |
+| `GET` | `/api/quotes/:idOrCode` | JWT / ADMIN | Obtiene el detalle completo y productos de una cotización. |
+| `PATCH` | `/api/quotes/:idOrCode/status` | ADMIN | Actualiza el estado (`PENDING`, `IN_PROGRESS`, `CONTACTED`, `CLOSED`, `CANCELLED`). |
+| `DELETE` | `/api/quotes/:idOrCode` | ADMIN | Elimina una cotización (responde `204`). |
+
+### Carga de Archivos (uploads)
+
+| Método | Ruta | Acceso | Descripción |
+| --- | --- | --- | --- |
+| `POST` | `/api/uploads` | ADMIN | Sube una imagen (JPEG, PNG, WebP, GIF, SVG; máx. 10MB). |
+| `POST` | `/api/uploads/multiple` | ADMIN | Sube múltiples imágenes (hasta 10 archivos). |
+| `DELETE` | `/api/uploads/:filename` | ADMIN | Elimina un archivo del servidor. |
+| `GET` | `/uploads/:filename` | Público | Archivos estáticos servidos directamente por el servidor. |
+
 ## 📊 Estado actual del backend
 
 | Área | Estado | Notas |
 | --- | --- | --- |
 | Configuración NestJS | ✅ Implementada | Prefijo `/api`, CORS, Helmet y validación global. |
-| Usuarios y autenticación | ✅ Implementada | Registro CUSTOMER, login, perfil JWT y roles. |
+| Usuarios y autenticación | ✅ Implementada | Registro CUSTOMER, login, perfil JWT, administración y activación/desactivación. |
 | Categorías | ✅ Implementada | Consulta pública y CRUD protegido para ADMIN. |
 | Productos | ✅ Implementada | Consulta pública, filtros, CRUD ADMIN y productos activos/inactivos. |
-| Base de datos | ✅ Implementada | Prisma, PostgreSQL, migraciones y seed inicial. |
+| Inventario | ✅ Implementada | Movimientos entrada/salida, ajustes, alertas de stock mínimo y resumen KPI. |
+| Promociones | ✅ Implementada | Descuentos porcentuales/fijos, fechas, cupones y asociación a productos. |
+| Banners | ✅ Implementada | CRUD de banners de inicio, reordenamiento y beneficios destacados. |
+| Cotizaciones | ✅ Implementada | Solicitudes web/WhatsApp con código único, ítems y seguimiento de estados. |
+| Archivos (Uploads) | ✅ Implementada | Carga y almacenamiento en disco con validación de tipo/peso y servicio estático. |
+| Base de datos | ✅ Implementada | Prisma, PostgreSQL, modelos relacionales y migraciones. |
 | Pruebas automatizadas | ⚠️ Pendiente | No hay suite de pruebas configurada actualmente. |
 | Documentación OpenAPI | ⚠️ Pendiente | Todavía no se ha integrado Swagger. |
 
 ## 🚧 Pendientes
 
-Los siguientes módulos están previstos, pero todavía no están implementados en la API:
-
-- `users`: administración de usuarios y activación/desactivación.
-- `inventory`: movimientos, ajustes y alertas de stock mínimo.
-- `promotions`: descuentos y reglas de ofertas.
-- `banners`: gestión de banners del inicio.
-- `quotes`: solicitudes y seguimiento de cotizaciones.
-- `uploads`: carga y almacenamiento de imágenes.
-- Pruebas unitarias, pruebas e2e y documentación Swagger.
+- Pruebas unitarias y pruebas e2e.
+- Documentación interactiva con OpenAPI / Swagger.
 
 ## 👨‍💻 Guía para continuar el desarrollo
 

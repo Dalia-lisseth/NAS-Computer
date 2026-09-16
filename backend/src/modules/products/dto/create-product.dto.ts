@@ -13,7 +13,7 @@ export class CreateProductDto {
   @IsOptional() @Type(() => Number) @IsNumber({ maxDecimalPlaces: 1 }) @Min(0) rating?: number;
   @IsOptional() @Type(() => Number) @IsInt() @Min(0) reviewCount?: number;
   @IsOptional() @Transform(({ value }) => (value === null || value === '' ? null : String(value))) @ValidateIf((_, v) => v !== null) @IsString() @MaxLength(30) badge?: string | null;
-  @IsOptional() @IsObject() specifications?: Record<string, any>;
+  @IsOptional() @IsObject() specifications?: Record<string, unknown>;
   @IsOptional() @IsBoolean() isActive?: boolean;
   @IsString() categoryId!: string;
 }

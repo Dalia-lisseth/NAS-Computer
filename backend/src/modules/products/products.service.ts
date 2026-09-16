@@ -34,7 +34,19 @@ export class ProductsService {
     await this.ensureCategory(dto.categoryId);
     const slug = createSlug(dto.slug || dto.name);
     try {
-      return await this.prisma.product.create({ data: { ...dto, name: dto.name.trim(), slug, description: dto.description?.trim() || '', image: dto.image?.trim(), badge: dto.badge?.trim(), previousPrice: dto.previousPrice ?? null, specifications: dto.specifications ?? undefined }, include: productInclude });
+      return await this.prisma.product.create({
+        data: {
+          ...dto,
+          name: dto.name.trim(),
+          slug,
+          description: dto.description?.trim() || '',
+          image: dto.image?.trim(),
+          badge: dto.badge?.trim(),
+          previousPrice: dto.previousPrice ?? null,
+          specifications: (dto.specifications as Prisma.InputJsonValue) ?? undefined
+        },
+        include: productInclude
+      });
     } catch (error) {
       this.rethrowUnique(error);
     }
@@ -55,7 +67,12 @@ export class ProductsService {
           description: dto.description !== undefined ? dto.description.trim() : undefined,
           image: dto.image !== undefined ? (dto.image ? dto.image.trim() : null) : undefined,
           badge: dto.badge !== undefined ? (dto.badge ? dto.badge.trim() : null) : undefined,
-          specifications: specifications === null ? Prisma.JsonNull : specifications,
+          specifications:
+            specifications === null
+              ? Prisma.JsonNull
+              : specifications !== undefined
+                ? (specifications as Prisma.InputJsonValue)
+                : undefined,
           category: categoryId ? { connect: { id: categoryId } } : undefined
         },
         include: productInclude

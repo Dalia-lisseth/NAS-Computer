@@ -4,8 +4,14 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import * as Joi from 'joi';
 import { AuthModule } from './modules/auth/auth.module';
+import { BannersModule } from './modules/banners/banners.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
 import { ProductsModule } from './modules/products/products.module';
+import { PromotionsModule } from './modules/promotions/promotions.module';
+import { QuotesModule } from './modules/quotes/quotes.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
+import { UsersModule } from './modules/users/users.module';
 import { DatabaseModule } from './database/database.module';
 
 @Module({
@@ -25,8 +31,14 @@ import { DatabaseModule } from './database/database.module';
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     DatabaseModule,
     AuthModule,
+    UsersModule,
     CategoriesModule,
-    ProductsModule
+    ProductsModule,
+    InventoryModule,
+    PromotionsModule,
+    BannersModule,
+    QuotesModule,
+    UploadsModule
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }]
 })
