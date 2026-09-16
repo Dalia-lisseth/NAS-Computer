@@ -232,7 +232,7 @@ Ejemplo mínimo:
 
 ### Cotizaciones (quotes)
 
-| Método | Ruta | Acceso | Descripción |
+| Método | Ruta | Acceso | Descripción | aaaaaa
 | --- | --- | --- | --- |
 | `POST` | `/api/quotes` | Público / JWT | Registra una solicitud de cotización (asocia usuario si está autenticado). |
 | `GET` | `/api/quotes` | ADMIN | Lista todas las cotizaciones con búsqueda por cliente/código y estado. |
