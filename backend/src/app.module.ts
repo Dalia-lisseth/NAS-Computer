@@ -23,7 +23,7 @@ import { DatabaseModule } from './database/database.module';
         PORT: Joi.number().port().default(3000),
         FRONTEND_URL: Joi.string().uri().default('http://localhost:5173'),
         DATABASE_URL: Joi.string().required(),
-        SHADOW_DATABASE_URL: Joi.string().required(),
+        SHADOW_DATABASE_URL: Joi.string().optional(),
         JWT_ACCESS_SECRET: Joi.string().min(32).required(),
         JWT_ACCESS_EXPIRES_IN: Joi.string().default('15m')
       })
