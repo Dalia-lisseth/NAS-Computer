@@ -25,7 +25,8 @@ import { DatabaseModule } from './database/database.module';
         DATABASE_URL: Joi.string().required(),
         SHADOW_DATABASE_URL: Joi.string().optional(),
         JWT_ACCESS_SECRET: Joi.string().min(32).required(),
-        JWT_ACCESS_EXPIRES_IN: Joi.string().default('15m')
+        JWT_ACCESS_EXPIRES_IN: Joi.string().default('1d'),
+        JWT_EXPIRES_IN: Joi.string().optional()
       })
     }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
