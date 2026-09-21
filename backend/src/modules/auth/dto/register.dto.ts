@@ -10,7 +10,7 @@ export class RegisterDto {
   email!: string;
 
   @IsString()
-  @MinLength(12, { message: 'La contraseña debe tener al menos 12 caracteres.' })
+  @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres.' })
   @Matches(/[a-z]/, { message: 'La contraseña debe incluir al menos una letra minúscula.' })
   @Matches(/[A-Z]/, { message: 'La contraseña debe incluir al menos una letra mayúscula.' })
   @Matches(/\d/, { message: 'La contraseña debe incluir al menos un número.' })

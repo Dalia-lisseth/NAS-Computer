@@ -140,7 +140,6 @@ export function ModalLogin({ onRedireccionarAdmin }) {
           <form onSubmit={manejarSubmitLogin} className="auth-formulario-body">
             <div className="auth-intro-txt">
               <h3>Bienvenido a NAS Computer</h3>
-              <p>Ingresa tus datos. El sistema detectará automáticamente tu perfil (Cliente o Administrador).</p>
             </div>
 
             <div className="campo-grupo">
@@ -212,7 +211,7 @@ export function ModalLogin({ onRedireccionarAdmin }) {
               <input
                 type="email"
                 required
-                placeholder="daniel@empresa.com"
+                placeholder="daniel23@gmail.com"
                 value={regEmail}
                 onChange={(e) => setRegEmail(e.target.value)}
                 className="campo-input"
@@ -235,8 +234,10 @@ export function ModalLogin({ onRedireccionarAdmin }) {
               <input
                 type="password"
                 required
-                minLength={12}
-                placeholder="Mínimo 12 caracteres; mayúscula, minúscula y número"
+                minLength={6}
+                pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}"
+                title="Usa al menos 6 caracteres, incluyendo una mayúscula, una minúscula y un número."
+                placeholder="Mínimo 6 caracteres; mayúscula, minúscula y número"
                 value={regPassword}
                 onChange={(e) => setRegPassword(e.target.value)}
                 className="campo-input"

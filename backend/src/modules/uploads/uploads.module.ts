@@ -1,5 +1,6 @@
 import { BadRequestException, Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
+import type { Request } from 'express';
 import { existsSync, mkdirSync } from 'fs';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
@@ -10,14 +11,22 @@ import { UploadsService } from './uploads.service';
   imports: [
     MulterModule.register({
       storage: diskStorage({
-        destination: (_req, _file, cb) => {
+        destination: (
+          _req: Request,
+          _file: Express.Multer.File,
+          cb: (error: Error | null, destination: string) => void
+        ) => {
           const uploadPath = join(process.cwd(), 'uploads');
           if (!existsSync(uploadPath)) {
             mkdirSync(uploadPath, { recursive: true });
           }
           cb(null, uploadPath);
         },
-        filename: (_req, file, cb) => {
+        filename: (
+          _req: Request,
+          file: Express.Multer.File,
+          cb: (error: Error | null, filename: string) => void
+        ) => {
           const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
           const ext = extname(file.originalname).toLowerCase();
           cb(null, `${uniqueSuffix}${ext}`);
@@ -26,7 +35,11 @@ import { UploadsService } from './uploads.service';
       limits: {
         fileSize: 10 * 1024 * 1024 // 10MB
       },
-      fileFilter: (_req, file, cb) => {
+      fileFilter: (
+        _req: Request,
+        file: Express.Multer.File,
+        cb: (error: Error | null, acceptFile: boolean) => void
+      ) => {
         const allowedMimeTypes = [
           'image/jpeg',
           'image/png',
